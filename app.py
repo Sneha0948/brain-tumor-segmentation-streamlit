@@ -73,9 +73,6 @@ if uploaded_file is not None:
     # Load image into memory (NOT saved to disk)
     image = Image.open(uploaded_file)
 
-    st.subheader("Input MRI Slice")
-    st.image(image, use_container_width=True)
-
     # ---------------- Preprocessing ----------------
     input_tensor = preprocess_image(image, target_size=(128, 128))
 
@@ -96,20 +93,19 @@ if uploaded_file is not None:
     # ---------------- Display ----------------------
     st.subheader("Segmentation Results")
 
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.markdown("**Input MRI**")
-    st.image(image, use_container_width=True)
-
-with col2:
-    st.markdown("**Predicted Mask**")
-    st.image(refined_mask * 255, use_container_width=True)
-
-with col3:
-    st.markdown("**Overlay**")
-    st.image(overlay, use_container_width=True)
-
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("**Input MRI**")
+        st.image(image, use_container_width=True)
+        
+    with col2:
+        st.markdown("**Predicted Mask**")
+        st.image(refined_mask * 255, use_container_width=True)
+        
+    with col3:
+        st.markdown("**Overlay**")
+        st.image(overlay, use_container_width=True)
 
     # ---------------- Memory Cleanup ---------------
     del input_tensor
