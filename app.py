@@ -94,11 +94,22 @@ if uploaded_file is not None:
     overlay[refined_mask == 1] = [255, 0, 0]
 
     # ---------------- Display ----------------------
-    st.subheader("Predicted Tumor Mask")
+    st.subheader("Segmentation Results")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.markdown("**Input MRI**")
+    st.image(image, use_container_width=True)
+
+with col2:
+    st.markdown("**Predicted Mask**")
     st.image(refined_mask * 255, use_container_width=True)
 
-    st.subheader("Overlay Result")
+with col3:
+    st.markdown("**Overlay**")
     st.image(overlay, use_container_width=True)
+
 
     # ---------------- Memory Cleanup ---------------
     del input_tensor
