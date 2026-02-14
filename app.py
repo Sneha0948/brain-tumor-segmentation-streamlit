@@ -4,6 +4,8 @@ import numpy as np
 import cv2
 from PIL import Image
 import gc
+import requests
+import os
 
 from utils import preprocess_image, keep_largest_component
 
@@ -27,12 +29,29 @@ st.warning(
 )
 
 # --------------------------------------------------
+# Hugging Face Model URL
+# --------------------------------------------------
+MODEL_URL = "https://huggingface.co/sneha09004/brain-tumor-unet-model/resolve/main/brain_tumor_unet_inference.keras"
+MODEL_PATH = "brain_tumor_unet_inference.keras"
+
+# --------------------------------------------------
+# Download Model (Only If Not Exists)
+# --------------------------------------------------
+def download_model():
+    if not os.path.exists(MODEL_PATH):
+        with st.spinner("Downloading model... Please wait ⏳"):
+            response = requests.get(MODEL_URL)
+            with open(MODEL_PATH, "wb") as f:
+                f.write(response.content)
+
+# --------------------------------------------------
 # Load Model (Cached)
 # --------------------------------------------------
 @st.cache_resource
 def load_model():
+    download_model()
     model = tf.keras.models.load_model(
-        "model/brain_tumor_unet_inference.keras",  # use optimized version
+        MODEL_PATH,
         compile=False
     )
     return model
@@ -70,7 +89,7 @@ if uploaded_file is not None:
     original_gray = cv2.resize(original_gray, (128, 128))
 
     overlay = cv2.cvtColor(original_gray, cv2.COLOR_GRAY2RGB)
-    overlay[refined_mask == 1] = [255, 0, 0]  # red tumor region
+    overlay[refined_mask == 1] = [255, 0, 0]
 
     # ---------------- Display ----------------------
     st.subheader("Predicted Tumor Mask")
@@ -84,4 +103,5 @@ if uploaded_file is not None:
     del prediction
     del binary_mask
     gc.collect()
+
 
