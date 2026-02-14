@@ -40,9 +40,11 @@ MODEL_PATH = "brain_tumor_unet_inference.keras"
 def download_model():
     if not os.path.exists(MODEL_PATH):
         with st.spinner("Downloading model... Please wait ⏳"):
-            response = requests.get(MODEL_URL)
+            response = requests.get(MODEL_URL, stream=True)
             with open(MODEL_PATH, "wb") as f:
-                f.write(response.content)
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
 
 # --------------------------------------------------
 # Load Model (Cached)
